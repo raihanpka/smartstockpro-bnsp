@@ -11,6 +11,7 @@ services:
       - /var/www/html/node_modules
     environment:
       - APP_ENV=production
+      - DB_HOST=db
     depends_on:
       - db
     networks:
@@ -55,6 +56,8 @@ services:
     volumes:
       - .:/var/www/html
       - /var/www/html/vendor
+    environment:
+      - DB_HOST=db
     depends_on:
       - db
     networks:

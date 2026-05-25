@@ -186,7 +186,7 @@ Akses aplikasi di `http://localhost:8000`.
 
 ### VPS (Ubuntu 22.04+)
 
-Untuk deployment di server produksi/VPS (misalnya Ubuntu), sangat disarankan untuk **hanya menggunakan Docker** agar lebih bersih dan konsisten, daripada meng-install PHP/Nginx secara manual.
+Untuk deployment di server produksi/VPS (misalnya Ubuntu), saya menyiapkan konfigurasi untuk **menggunakan Docker** agar lebih bersih dan konsisten, daripada meng-install PHP/Nginx secara manual.
 
 Jika Anda menggunakan VPS standar (tanpa panel Dokploy):
 1. Install Docker & Docker Compose di server Anda.
@@ -203,13 +203,7 @@ Jika Anda menggunakan VPS standar (tanpa panel Dokploy):
    ```bash
    docker compose up -d --build
    ```
-5. Inisialisasi awal database (cukup sekali):
-   ```bash
-   docker compose exec app php artisan key:generate
-   docker compose exec app php artisan migrate --seed
-   ```
-
-Aplikasi Anda kini sudah berjalan lewat Docker secara penuh!
+5. Container secara otomatis akan mendeteksi pertama kali berjalan dan otomatis mengeksekusi migrasi basis data serta penyemaian data (*seeding*) berkat skrip `docker-entrypoint.sh`.
 
 ---
 

@@ -652,10 +652,7 @@ cp .env.example .env
 # Build dan jalankan semua service
 docker compose up -d --build
 
-# Setup aplikasi
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan queue:table
-docker compose exec app php artisan migrate --seed
+# Setup aplikasi (Migrate & Seed) otomatis ditangani oleh docker-entrypoint.sh saat kontainer pertama kali menyala
 
 # Akses di http://localhost:8080
 ```
@@ -677,7 +674,7 @@ docker compose restart app
 git pull origin main
 docker compose build app worker
 docker compose up -d
-docker compose exec app php artisan migrate --force
+# Catatan: docker-entrypoint.sh secara otomatis menjalankan 'migrate --force' setiap kali kontainer dinyalakan ulang
 docker compose exec app php artisan config:cache
 docker compose exec app php artisan queue:restart
 
