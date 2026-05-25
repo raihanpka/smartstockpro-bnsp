@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Dependencies (akan di-install di dalam container)
+vendor/
+node_modules/
+
+# Build output
+public/build/
+
+# Environment dan secret
+.env
+.env.*
+!.env.example
+
+# Storage (di-mount sebagai volume)
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+storage/logs/
+
+# Dokumentasi dan file development
+docs/
+*.md
+!README.md
+phpunit.xml
+.phpunit.cache/
+tests/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

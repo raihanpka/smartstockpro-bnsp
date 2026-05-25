@@ -1,0 +1,51 @@
+# Git Ignore Configuration
+
+### Environment & Secrets ###
+.env
+.env.backup
+.env.production
+/auth.json
+
+### Dependencies & Package Managers ###
+/node_modules/
+/vendor/
+npm-debug.log
+yarn-error.log
+
+### Laravel Framework & Storage ###
+*.log
+_ide_helper.php
+/storage/*.key
+/storage/pail/
+
+### Build & Compiled Assets ###
+/public/build/
+/public/hot
+/public/storage
+/public/fonts-manifest.dev.json
+
+### PHPUnit & Testing ###
+/.phpunit.cache/
+.phpunit.result.cache
+
+### IDEs & Editors ###
+/.codex
+/.cursor/
+/.idea/
+/.nova/
+/.vscode/
+/.zed/
+/.antigravitycli/
+
+### OS & System Files ###
+*.DS_Store
+*Thumbs.db
+*__MACOSX__
+
+### Local VM & Deployment ###
+Homestead.json
+Homestead.yaml
+/.vagrant
+
+
+docs/AGENTS.md
