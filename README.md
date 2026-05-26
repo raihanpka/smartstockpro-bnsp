@@ -1,7 +1,7 @@
 # SmartStock Pro
 
 Sistem Manajemen Inventaris berbasis web untuk PT Maju Bersama Digital, dibangun di atas Laravel dan PostgreSQL.
-Dikembangkan oleh **Raihan Putra Kirana** untuk memenuhi prasyarat sertifikasi BNSP.
+Dikembangkan oleh **Raihan Putra Kirana** untuk memenuhi prasyarat sertifikasi BNSP. Repository dapat diakses di **GitHub** melalui link https://github.com/raihanpka/smartstockpro-bnsp.
 
 ---
 
@@ -209,10 +209,9 @@ Jika Anda menggunakan VPS standar (tanpa panel Dokploy):
 
 ## Dokumentasi
 
-- [Dokumentasi Teknis untuk Klien](docs/Dokumentasi_Teknis.md) - Dokumentasi teknis, arsitektur, panduan pengguna, dan troubleshooting untuk klien
-- [Arsitektur & Infrastruktur](docs/Arsitektur_dan_Infrastruktur.md) - Detail topologi perangkat keras dan jaringan
-- [Tools & Framework](docs/Tools_dan_Framework.md) - Analisis skalabilitas dan peranti pihak ketiga
-- [Migrasi & Pembaharuan](docs/Kebutuhan_Migrasi_dan_Pembaharuan.md) - Strategi cutover, version control, dan analisis dampak
+- [Arsitektur & Infrastruktur](01_Dokumen_Kebutuhan_NonFungsional.docx) - Detail topologi perangkat keras dan jaringan
+- [Migrasi & Pembaharuan](02_Dokumen_Migrasi_dan_Pembaharuan.docx) - Strategi cutover, version control, dan analisis dampak
+- [Dokumentasi Teknis untuk Klien](03_Dokumentasi_Teknis_Pelanggan.docx) - Dokumentasi teknis, arsitektur, panduan pengguna, dan troubleshooting untuk klien
 
 ---
 
