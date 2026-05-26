@@ -9,8 +9,10 @@ services:
       - .:/var/www/html
       - /var/www/html/vendor
       - /var/www/html/node_modules
+      - /var/www/html/bootstrap/cache
     environment:
       - APP_ENV=production
+      - DB_HOST=db
     depends_on:
       - db
     ports:
@@ -23,9 +25,9 @@ services:
     container_name: smartstock_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: smartstock_pro
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: ${DB_DATABASE:-smartstock_pro}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -41,6 +43,8 @@ services:
     volumes:
       - .:/var/www/html
       - /var/www/html/vendor
+    environment:
+      - DB_HOST=db
     depends_on:
       - db
     networks:

@@ -21,9 +21,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('products', \App\Http\Controllers\Web\ProductController::class);
     Route::resource('transactions', \App\Http\Controllers\Web\TransactionController::class)->only(['index', 'create', 'store']);
     Route::resource('transfers', \App\Http\Controllers\Web\TransferController::class)->except(['show', 'destroy']);
-    Route::resource('categories', \App\Http\Controllers\Web\CategoryController::class)->except(['show', 'destroy', 'edit', 'update']);
-    Route::resource('warehouses', \App\Http\Controllers\Web\WarehouseController::class)->except(['show', 'destroy', 'edit', 'update']);
-    Route::resource('suppliers', \App\Http\Controllers\Web\SupplierController::class)->except(['show', 'destroy', 'edit', 'update']);
+    Route::get('/catalog', [\App\Http\Controllers\Web\CatalogController::class, 'index'])->name('catalog.index');
+    Route::resource('categories', \App\Http\Controllers\Web\CategoryController::class)->except(['index', 'show', 'destroy', 'edit', 'update']);
+    Route::resource('warehouses', \App\Http\Controllers\Web\WarehouseController::class)->except(['index', 'show', 'destroy', 'edit', 'update']);
+    Route::resource('suppliers', \App\Http\Controllers\Web\SupplierController::class)->except(['index', 'show', 'destroy', 'edit', 'update']);
     
     Route::get('/system-logs', [\App\Http\Controllers\Web\SystemLogController::class, 'index'])->name('system-logs');
 });

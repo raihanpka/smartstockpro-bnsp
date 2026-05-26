@@ -21,6 +21,15 @@ class ProductController extends Controller
 
     public function create()
     {
+        $missingMasterData = [];
+        if (Category::count() === 0) $missingMasterData[] = 'Kategori';
+        if (Warehouse::count() === 0) $missingMasterData[] = 'Gudang';
+        if (\App\Models\Supplier::count() === 0) $missingMasterData[] = 'Pemasok';
+
+        if (count($missingMasterData) > 0) {
+            return redirect()->route('products.index')->with('error', 'Lengkapi master data berikut terlebih dahulu: ' . implode(', ', $missingMasterData));
+        }
+
         $categories = Category::all();
         $warehouses = Warehouse::all();
         return view('products.create', compact('categories', 'warehouses'));

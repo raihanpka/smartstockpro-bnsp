@@ -19,11 +19,12 @@ class WarehouseController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|unique:warehouses,code',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
+            'address' => 'nullable|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
 
         Warehouse::create($validated);
-        return redirect()->route('warehouses.index')->with('success', 'Gudang berhasil ditambahkan.');
+        return redirect()->route('catalog.index')->with('success', 'Gudang berhasil ditambahkan.');
     }
 }

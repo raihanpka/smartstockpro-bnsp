@@ -39,7 +39,7 @@
                                 <svg class="w-5 h-5 text-slate-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
                                     <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z"/>
                                 </svg>
-                                <span class="ms-3">Inventory</span>
+                                <span class="ms-3">Inventaris Produk</span>
                             </a>
                         </li>
                         <li>
@@ -47,31 +47,24 @@
                                 <svg class="w-5 h-5 text-slate-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 16">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/>
                                 </svg>
-                                <span class="ms-3">Transactions</span>
+                                <span class="ms-3">Transaksi</span>
                             </a>
                         </li>
                         <li>
                             <a href="/transfers" class="flex items-center p-2 rounded-md text-slate-900 hover:bg-slate-100 transition-colors">
                                 <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                                <span class="ms-3">Transfers</span>
+                                <span class="ms-3">Transfer Gudang</span>
                             </a>
                         </li>
                         <li class="pt-4 pb-2">
-                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2">Master Data</span>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2">Kelola Katalog</span>
                         </li>
                         <li>
-                            <a href="/categories" class="flex items-center p-2 rounded-md text-slate-900 hover:bg-slate-100 transition-colors">
-                                <span class="ms-3">Categories</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/warehouses" class="flex items-center p-2 rounded-md text-slate-900 hover:bg-slate-100 transition-colors">
-                                <span class="ms-3">Warehouses</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/suppliers" class="flex items-center p-2 rounded-md text-slate-900 hover:bg-slate-100 transition-colors">
-                                <span class="ms-3">Suppliers</span>
+                            <a href="/catalog" class="flex items-center p-2 rounded-md text-slate-900 hover:bg-slate-100 transition-colors">
+                                <svg class="w-5 h-5 text-slate-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                <span class="ms-3">Katalog Produk</span>
                             </a>
                         </li>
                     </ul>

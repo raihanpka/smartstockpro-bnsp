@@ -1,17 +1,34 @@
 <x-app-layout>
     <x-slot name="header">
-        Stock Transfers
+        Transfer Gudang
     </x-slot>
 
     <div class="mb-4 flex justify-between items-center">
+        @php
+            $missingData = [];
+            if (\App\Models\Product::count() === 0) $missingData[] = 'Produk';
+            if (\App\Models\Warehouse::count() < 2) $missingData[] = 'Minimal 2 Gudang';
+        @endphp
         <div>
             <h3 class="text-lg font-medium text-slate-900">Transfer Persetujuan</h3>
             <p class="text-sm text-slate-500">Kelola pemindahan stok antar gudang.</p>
         </div>
-        <a href="{{ route('transfers.create') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90 h-9 px-4 py-2">
-            Request Transfer
-        </a>
+        @if(count($missingData) > 0)
+            <span class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium opacity-50 cursor-not-allowed bg-slate-900 text-slate-50 shadow h-9 px-4 py-2">
+                Buat Pengajuan
+            </span>
+        @else
+            <a href="{{ route('transfers.create') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90 h-9 px-4 py-2">
+                Buat Pengajuan
+            </a>
+        @endif
     </div>
+
+    @if(count($missingData) > 0)
+        <div class="p-4 mb-4 text-sm text-amber-800 rounded-lg bg-amber-50 border border-amber-200">
+            <span class="font-semibold">Perhatian:</span> Anda belum dapat mengajukan transfer stok. Lengkapi data berikut terlebih dahulu: <strong>{{ implode(', ', $missingData) }}</strong>.
+        </div>
+    @endif
 
     @if(session('success'))
         <div class="p-4 mb-4 text-sm text-emerald-800 rounded-lg bg-emerald-50 border border-emerald-200">

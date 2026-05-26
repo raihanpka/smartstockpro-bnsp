@@ -14,7 +14,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // Menggunakan auth middleware secara umum, namun bisa dilewati jika request testing belum di set up sepenuhnya untuk semua request
-Route::middleware([])->group(function () {
+Route::middleware([])->name('api.')->group(function () {
     Route::apiResource('warehouses', WarehouseController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('suppliers', SupplierController::class);

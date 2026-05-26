@@ -21,6 +21,14 @@ class TransferController extends Controller
 
     public function create()
     {
+        $missingData = [];
+        if (Product::count() === 0) $missingData[] = 'Produk';
+        if (Warehouse::count() < 2) $missingData[] = 'Minimal 2 Gudang (untuk pengirim dan penerima)';
+
+        if (count($missingData) > 0) {
+            return redirect()->route('transfers.index')->with('error', 'Anda tidak dapat membuat transfer karena data berikut belum ada: ' . implode(', ', $missingData));
+        }
+
         $warehouses = Warehouse::all();
         $products = Product::all();
         return view('transfers.create', compact('warehouses', 'products'));

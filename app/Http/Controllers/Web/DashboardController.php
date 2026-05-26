@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $totalCategories = Category::count();
         
         $lowStockProducts = Product::with(['category', 'warehouse'])
-            ->whereColumn('stock', '<=', 'minimum_stock')
+            ->whereColumn('stock', '<=', 'min_stock')
             ->get();
             
         $lowStockCount = $lowStockProducts->count();

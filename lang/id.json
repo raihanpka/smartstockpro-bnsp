@@ -1,0 +1,18 @@
+{
+    "Email": "Email",
+    "Password": "Kata Sandi",
+    "Remember me": "Ingat saya",
+    "Don't have an account?": "Belum punya akun?",
+    "Forgot your password?": "Lupa kata sandi?",
+    "Log in": "Masuk",
+    "Name": "Nama Lengkap",
+    "Confirm Password": "Konfirmasi Kata Sandi",
+    "Already registered?": "Sudah punya akun?",
+    "Register": "Daftar",
+    "Dashboard": "Dasbor",
+    "Profile": "Profil",
+    "Log Out": "Keluar",
+    "Whoops! Something went wrong.": "Waduh! Terjadi kesalahan.",
+    "These credentials do not match our records.": "Kredensial ini tidak cocok dengan data kami.",
+    "Too many login attempts. Please try again in :seconds seconds.": "Terlalu banyak percobaan masuk. Silakan coba lagi dalam :seconds detik."
+}

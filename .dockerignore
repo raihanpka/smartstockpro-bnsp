@@ -37,3 +37,6 @@ tests/
 # OS
 .DS_Store
 Thumbs.db
+
+# Jangan copy cache package host
+bootstrap/cache/*.php

@@ -16,7 +16,7 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_person' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -25,6 +25,6 @@ class SupplierController extends Controller
         ]);
 
         Supplier::create($validated);
-        return redirect()->route('suppliers.index')->with('success', 'Supplier berhasil ditambahkan.');
+        return redirect()->route('catalog.index')->with('success', 'Pemasok berhasil ditambahkan.');
     }
 }

@@ -21,6 +21,14 @@ class TransactionController extends Controller
 
     public function create()
     {
+        $missingData = [];
+        if (Product::count() === 0) $missingData[] = 'Produk';
+        if (Warehouse::count() === 0) $missingData[] = 'Gudang';
+
+        if (count($missingData) > 0) {
+            return redirect()->route('transactions.index')->with('error', 'Anda tidak dapat membuat transaksi karena data berikut belum ada: ' . implode(', ', $missingData));
+        }
+
         $products = Product::all();
         $warehouses = Warehouse::all();
         return view('transactions.create', compact('products', 'warehouses'));
