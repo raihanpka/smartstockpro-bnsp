@@ -1,7 +1,14 @@
 # SmartStock Pro
 
-Sistem Manajemen Inventaris berbasis web untuk PT Maju Bersama Digital, dibangun di atas Laravel dan PostgreSQL.
-Dikembangkan oleh **Raihan Putra Kirana** untuk memenuhi prasyarat sertifikasi BNSP. Repository dapat diakses di **GitHub** melalui link https://github.com/raihanpka/smartstockpro-bnsp.
+Sistem Manajemen Inventaris berbasis web untuk PT Maju Bersama Digital, dibangun di atas **Laravel 12** dan **PostgreSQL 16**.  
+Dikembangkan oleh **Raihan Putra Kirana** untuk memenuhi prasyarat sertifikasi BNSP.  
+Repository: [github.com/raihanpka/smartstockpro-bnsp](https://github.com/raihanpka/smartstockpro-bnsp)
+
+## Tampilan Aplikasi
+
+| Dashboard Utama | Peta Lokasi dan Manajemen Gudang |
+| :---: | :---: |
+| ![Dashboard Utama](docs/dashboard.png) | ![Peta Lokasi dan Manajemen Gudang](docs/gudang.png) |
 
 ---
 
@@ -9,38 +16,48 @@ Dikembangkan oleh **Raihan Putra Kirana** untuk memenuhi prasyarat sertifikasi B
 
 SmartStock Pro menggantikan proses pencatatan stok manual berbasis spreadsheet dengan satu platform terpusat yang dapat diakses oleh seluruh gudang secara bersamaan. Sistem ini mencakup manajemen stok real-time, transfer barang antar gudang, notifikasi otomatis, dan pelaporan berbasis data untuk mendukung pengambilan keputusan manajemen.
 
-PT Maju Bersama Digital mengoperasikan 5 gudang di Jakarta, Surabaya, Bandung, Medan, dan Makassar. SmartStock Pro dirancang untuk menyatukan operasional kelima lokasi tersebut ke dalam satu antarmuka yang konsisten.
+PT Maju Bersama Digital mengoperasikan **5 gudang** di Jakarta, Surabaya, Bandung, Medan, dan Makassar. SmartStock Pro menyatukan operasional kelima lokasi tersebut ke dalam satu antarmuka yang konsisten.
+
+---
 
 ## Fitur Utama
 
-**Autentikasi dan Keamanan**
-- Login multi-level: Admin, Manajer Gudang, Staf Gudang, Viewer
-- Password hashing dengan bcrypt, proteksi CSRF, dan validasi SQL Injection via Eloquent
-- Session timeout otomatis setelah 60 menit tidak aktif
-- Audit log seluruh aktivitas pengguna dengan Global Audit Log Observer
-- Rekaman dokumen mitigasi keamanan (*Security Risk Analysis*)
+### Modul 1: Autentikasi & Keamanan
+- Login multi-level: **Admin**, **Manajer Gudang**, **Staf Gudang**, **Viewer**
+- Role-based access control diterapkan di seluruh route via `RoleMiddleware`
+- Password hashing bcrypt dengan validasi kekuatan (min. 8 karakter, huruf besar/kecil, angka, simbol)
+- Proteksi CSRF (token di setiap form), SQL Injection (Eloquent ORM), dan XSS (Blade auto-escape)
+- Session timeout otomatis setelah 120 menit
+- **Audit Log** seluruh aktivitas: login, logout, registrasi, CRUD produk/transaksi/transfer — via `AuditObserver` dan `AuditLog::record()`
 
-**Dashboard dan Monitoring**
-- Grafik stok, tren barang masuk/keluar, dan nilai inventaris secara real-time via Chart.js
-- Peta lokasi gudang interaktif menggunakan Leaflet.js
-- Panel monitoring resource server (CPU, RAM, response time) secara real-time
-- Ekspor laporan PDF dengan grafik dan tabel berwarna
-- *System Logs UI* interaktif untuk *tracking exceptions*
+### Modul 2: Dashboard & Real-Time Monitoring
+- Grafik interaktif tren stok masuk/keluar 6 bulan terakhir (Chart.js)
+- **Peta lokasi gudang interaktif** menggunakan Leaflet.js + OpenStreetMap (marker + popup info)
+- **Panel monitoring server** (CPU load, RAM usage) yang **auto-refresh setiap 5 detik** via polling AJAX ke endpoint `/metrics`
+- Galeri produk dengan upload & preview gambar
+- Alert tabel stok kritis langsung di dashboard
+- Export laporan PDF dengan header berwarna, summary cards, tabel produk, dan tabel transaksi (via `barryvdh/laravel-dompdf`)
+- System Logs UI dengan kategorisasi severity: **Critical / Warning / Info**
 
-**Manajemen Inventaris**
-- CRUD lengkap: Produk (dengan Upload Gambar), Kategori, Gudang, Supplier, Transaksi Masuk/Keluar
-- Algoritma perhitungan stok *First-In-First-Out* (FIFO) *Batch Deduction*
-- Pencarian produk dengan pagination, sorting, dan filtering
+### Modul 3: Manajemen Inventaris (CRUD)
+- CRUD lengkap: **Produk** (+ upload gambar), **Kategori**, **Gudang**, **Supplier**, **Transaksi Masuk/Keluar**
+- Search produk berdasarkan nama / SKU
+- Filter: gudang, kategori, stok kritis saja
+- Sorting: nama, SKU, stok, terbaru — arah naik/turun
+- Pagination dengan query string preserved
+- Algoritma **FIFO** (First-In First-Out) untuk deduction stok keluar
 
-**Notifikasi dan Alert**
-- Alert otomatis ketika stok di bawah minimum threshold (in-app dan email)
-- Middleware pencatat *Slow Request* dan *Error Notification*
-- Dashboard log error dengan kategorisasi severity
+### Modul 4: Sistem Notifikasi & Alert
+- **Notification bell** di header dengan badge counter merah — menampilkan unread `LowStockAlert`
+- Alert otomatis in-app ketika stok produk di bawah `min_stock` (via Laravel Notifications → channel `database`)
+- Middleware `PerformanceMonitor` mencatat request lambat (> 1000ms) ke log
+- Dashboard Log Error dengan kategorisasi severity dari `storage/logs/laravel.log`
 
-**Transfer dan Pemrosesan Paralel**
-- Transfer barang antar gudang sinkron via database transaction yang ter-lock
-- Batch import data produk dari file CSV/Excel
-- Background job untuk generate laporan besar
+### Modul 5: Pemrosesan Paralel & Transfer
+- Transfer barang antar gudang: alur **request → approve → execute** via background job (`TransferStockJob`)
+- Batch import produk dari **CSV / Excel** — file disimpan, lalu diproses oleh `ImportProductsJob` (queue)
+- Background job generate laporan PDF besar tanpa memblokir UI (`GenerateReportJob`)
+- **Queue driver:** `sync` (in-memory, tanpa worker) untuk development; `database` untuk production Docker
 
 ---
 
@@ -49,169 +66,161 @@ PT Maju Bersama Digital mengoperasikan 5 gudang di Jakarta, Surabaya, Bandung, M
 | Layer | Teknologi | Versi |
 |---|---|---|
 | Backend | Laravel | 12.x |
-| Runtime | PHP | 8.3+ |
-| Database | PostgreSQL | 16+ |
-| Queue | Laravel Queues | Native |
+| Runtime | PHP | 8.4 |
+| Database | PostgreSQL | 16 |
+| Queue | Laravel Queue (sync / database) | Native |
 | Frontend | Blade + Alpine.js | Alpine 3.x |
 | Styling | Tailwind CSS | 3.x |
-| Maps | Leaflet.js | 1.9.x |
+| Maps | Leaflet.js + OpenStreetMap | 1.9.x |
 | Charts | Chart.js | 4.x |
-| PDF Export | barryvdh/laravel-dompdf | Latest |
+| PDF Export | barryvdh/laravel-dompdf | 3.x |
 | File Import | Maatwebsite/Laravel-Excel | 3.x |
-| Package Manager | Composer + NPM | Composer 2.x |
+| Web Server | Nginx (Docker) | 1.27 |
+| Container | Docker + Docker Compose | V2 |
+
+---
+
+## Prasyarat
+
+### Development Lokal
+
+| Prasyarat | Versi Minimum |
+|---|---|
+| PHP | 8.3+ |
+| Composer | 2.x |
+| Node.js | 20.x |
+| NPM | 10.x |
+| PostgreSQL | 16 |
+
+> **Tidak perlu Redis.** Queue dan cache menggunakan database (PostgreSQL) atau `sync` (in-memory).
+
+### Production / Docker
+
+| Prasyarat | Keterangan |
+|---|---|
+| Docker | 24+ |
+| Docker Compose | V2 (plugin, bukan standalone) |
 
 ---
 
 ## Instalasi
 
-### Prasyarat
-
-Pastikan versi berikut tersedia sebelum memulai:
-
-| Prasyarat | Versi Minimum |
-|---|---|
-| PHP | 8.3 |
-| Composer | 2.x |
-| Node.js | 20.x |
-| NPM | 10.x |
-| PostgreSQL | 16 |
-| Redis | 7 |
-
-### Langkah Awal (Semua Platform)
+### Quick Start — Development Lokal
 
 ```bash
-git clone https://github.com/your-org/smartstock-pro.git
-cd smartstock-pro
+# 1. Clone & masuk ke direktori
+git clone https://github.com/raihanpka/smartstockpro-bnsp.git
+cd smartstockpro-bnsp
 
+# 2. Salin environment file
 cp .env.example .env
 
+# 3. Sesuaikan .env untuk koneksi PostgreSQL lokal, lalu:
 composer install
-npm install
-
 php artisan key:generate
 php artisan migrate --seed
 
+# 4. Install & build frontend
+npm install
 npm run build
-```
 
-Isi `.env` sesuai konfigurasi database dan Redis pada platform masing-masing (lihat bagian di bawah).
-
----
-
-### Mac (Laravel Herd)
-
-1. Install [Laravel Herd](https://herd.laravel.com/) dan pastikan sudah aktif.
-2. Pindahkan folder project ke `~/Herd/`. Herd otomatis mendeteksi project Laravel dan melayaninya di `http://smartstock-pro.test`.
-3. Install PostgreSQL dan Redis via [DBngin](https://dbngin.com/) atau Homebrew:
-
-```bash
-brew install postgresql@16 redis
-brew services start postgresql@16
-brew services start redis
-```
-
-4. Buat database:
-
-```bash
-psql -U postgres -c "CREATE DATABASE smartstock_pro;"
-```
-
-5. Update `.env`:
-
-```
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=smartstock_pro
-DB_USERNAME=postgres
-DB_PASSWORD=
-
-CACHE_STORE=redis
-QUEUE_CONNECTION=redis
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-```
-
-6. Jalankan queue worker di terminal terpisah:
-
-```bash
-php artisan queue:work
-```
-
----
-
-### Windows
-
-1. Install [Laragon](https://laragon.org/) untuk lingkungan PHP lokal.
-2. Install PHP 8.3 dari [windows.php.net](https://windows.php.net/download/) dan tambahkan ke PATH.
-3. Install Composer dari [getcomposer.org](https://getcomposer.org/).
-4. Install PostgreSQL 16 dari [postgresql.org](https://www.postgresql.org/download/windows/).
-5. Install Redis menggunakan [Memurai](https://www.memurai.com/) (native Windows) atau aktifkan via WSL2.
-6. Install Node.js 20 dari [nodejs.org](https://nodejs.org/).
-7. Buat database di psql atau pgAdmin:
-
-```sql
-CREATE DATABASE smartstock_pro;
-```
-
-8. Update `.env`:
-
-```
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=smartstock_pro
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
-
-CACHE_STORE=redis
-QUEUE_CONNECTION=redis
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-```
-
-9. Jalankan server dan queue worker di dua terminal terpisah:
-
-```bash
-# Terminal 1
+# 5. Jalankan server
 php artisan serve
-
-# Terminal 2
-php artisan queue:work
 ```
 
-Akses aplikasi di `http://localhost:8000`.
+Akses di `http://localhost:8000`.
+
+> **Untuk development tanpa PostgreSQL:** ganti `DB_CONNECTION=sqlite` di `.env` dan hapus baris `DB_HOST/PORT/DATABASE/USERNAME/PASSWORD`. Laravel akan membuat file `database/database.sqlite` secara otomatis.
+
+> **Queue di development:** default `QUEUE_CONNECTION=sync` — semua job dieksekusi langsung tanpa worker terpisah.
 
 ---
 
-### VPS (Ubuntu 22.04+)
+### Mac — Laravel Herd
 
-Untuk deployment di server produksi/VPS (misalnya Ubuntu), saya menyiapkan konfigurasi untuk **menggunakan Docker** agar lebih bersih dan konsisten, daripada meng-install PHP/Nginx secara manual.
+1. Install [Laravel Herd](https://herd.laravel.com/) dan aktifkan.
+2. Pindahkan folder project ke `~/Herd/`. Herd otomatis melayani di `http://smartstockpro-bnsp.test`.
+3. Install PostgreSQL via [DBngin](https://dbngin.com/) atau Homebrew:
+   ```bash
+   brew install postgresql@16
+   brew services start postgresql@16
+   psql -U postgres -c "CREATE DATABASE smartstock_pro;"
+   ```
+4. Ikuti langkah **Quick Start** di atas (lewati `php artisan serve`).
 
-Jika Anda menggunakan VPS standar (tanpa panel Dokploy):
-1. Install Docker & Docker Compose di server Anda.
-2. Clone repository:
-   ```bash
-   git clone https://github.com/your-org/smartstock-pro.git /var/www/smartstock-pro
-   cd /var/www/smartstock-pro
-   ```
-3. Copy environment file dan sesuaikan kredensialnya:
-   ```bash
-   cp .env.example .env
-   ```
-4. Jalankan aplikasi menggunakan docker-compose standalone (yang sudah *include* Nginx):
-   ```bash
-   docker compose up -d --build
-   ```
-5. Container secara otomatis akan mendeteksi pertama kali berjalan dan otomatis mengeksekusi migrasi basis data serta penyemaian data (*seeding*) berkat skrip `docker-entrypoint.sh`.
+---
+
+### Windows — Laragon
+
+1. Install [Laragon](https://laragon.org/) dengan PHP 8.3+ dan Node.js 20.
+2. Install PostgreSQL 16 dari [postgresql.org](https://www.postgresql.org/download/windows/).
+3. Buka terminal Laragon dan ikuti langkah **Quick Start**.
+
+---
+
+### Production, Docker (VPS / Server Sendiri)
+
+```bash
+# 1. Clone repository
+git clone https://github.com/raihanpka/smartstockpro-bnsp.git /var/www/smartstockpro
+cd /var/www/smartstockpro
+
+# 2. Salin dan isi .env production
+cp .env.example .env
+# Edit minimal: APP_KEY (generate dulu), DB_PASSWORD, APP_URL
+
+# 3. Generate APP_KEY
+docker run --rm -v $(pwd):/app -w /app php:8.4-cli php artisan key:generate
+
+# 4. Build dan jalankan semua container
+docker compose up -d --build
+```
+
+Container yang berjalan:
+| Container | Peran |
+|---|---|
+| `smartstock_db` | PostgreSQL 16 |
+| `smartstock_app` | PHP-FPM 8.4 (menjalankan migrate + seed otomatis) |
+| `smartstock_nginx` | Nginx — reverse proxy ke PHP-FPM, port `8080` |
+| `smartstock_worker` | Queue worker untuk background jobs |
+
+Akses di `http://your-server:8080`.
+
+---
+
+## Akun Default (Seeder)
+
+Setelah `php artisan db:seed` atau Docker startup:
+
+| Email | Password | Role |
+|---|---|---|
+| `admin@smartstockpro.id` | `#Admin123` | Admin |
+
+> **Catatan:** Password `#Admin123` diset via seeder. Untuk akun baru via form registrasi, gunakan password yang memenuhi syarat: min. 8 karakter, huruf besar/kecil, angka, dan simbol.
+
+---
+
+## Struktur Queue
+
+| Driver | Kapan digunakan | Worker diperlukan? |
+|---|---|---|
+| `sync` | Development lokal | ❌ Tidak |
+| `database` | Production (Docker/VPS) | ✅ Ya (container `worker`) |
+
+Jobs yang berjalan di background:
+- `TransferStockJob` — eksekusi transfer stok antar gudang
+- `ImportProductsJob` — proses batch import CSV/Excel
+- `GenerateReportJob` — generate laporan PDF besar
 
 ---
 
 ## Dokumentasi
 
-- [Arsitektur & Infrastruktur](01_Dokumen_Kebutuhan_NonFungsional.docx) - Detail topologi perangkat keras dan jaringan
-- [Migrasi & Pembaharuan](02_Dokumen_Migrasi_dan_Pembaharuan.docx) - Strategi cutover, version control, dan analisis dampak
-- [Dokumentasi Teknis untuk Klien](03_Dokumentasi_Teknis_Pelanggan.docx) - Dokumentasi teknis, arsitektur, panduan pengguna, dan troubleshooting untuk klien
+| Dokumen | Isi |
+|---|---|
+| [`01_Dokumen_Kebutuhan_NonFungsional.docx`](01_Dokumen_Kebutuhan_NonFungsional.docx) | Arsitektur, spesifikasi server, analisis tools, skalabilitas |
+| [`02_Dokumen_Migrasi_dan_Pembaharuan.docx`](02_Dokumen_Migrasi_dan_Pembaharuan.docx) | Strategi migrasi dari spreadsheet, cutover plan, git workflow, impact analysis |
+| [`03_Dokumentasi_Teknis_Pelanggan.docx`](03_Dokumentasi_Teknis_Pelanggan.docx) | Panduan pengguna, FAQ, dokumentasi API, troubleshooting |
 
 ---
 

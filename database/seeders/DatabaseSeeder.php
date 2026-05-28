@@ -17,10 +17,10 @@ class DatabaseSeeder extends Seeder
     {
         // Gunakan firstOrCreate agar seeder bersifat idempotent (aman dijalankan berkali-kali di Docker)
         User::firstOrCreate(
-            ['email' => 'test@example.com'],
+            ['email' => 'admin@smartstockpro.id'],
             [
-                'name' => 'Test User',
-                'password' => bcrypt('password'), // Pastikan ada password fallback
+                'name' => 'Admin',
+                'password' => bcrypt('#Admin123'), // Pastikan ada password fallback
                 'role' => 'admin'
             ]
         );

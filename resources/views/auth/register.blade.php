@@ -28,6 +28,19 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
+        <!-- Role -->
+        <div class="mt-4">
+            <x-input-label for="role" value="Role / Peran" />
+            <select id="role" name="role" class="block mt-1 w-full border border-slate-200 bg-white pl-3 pr-10 shadow-sm focus:border-slate-400 focus:ring-0 text-sm h-10 rounded-md" required>
+                <option value="">-- Pilih Peran --</option>
+                <option value="admin"   {{ old('role') === 'admin'   ? 'selected' : '' }}>Admin</option>
+                <option value="manager" {{ old('role') === 'manager' ? 'selected' : '' }}>Manajer Gudang</option>
+                <option value="staff"   {{ old('role') === 'staff'   ? 'selected' : '' }}>Staf Gudang</option>
+                <option value="viewer"  {{ old('role') === 'viewer'  ? 'selected' : '' }}>Viewer</option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
         <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />

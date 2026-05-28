@@ -26,6 +26,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="h-4 w-4 text-slate-400"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>
             </div>
             <div class="text-2xl font-bold text-slate-950">{{ number_format($totalWarehouses) }}</div>
+            <p class="text-xs text-slate-500 mt-1">Terdaftar aktif</p>
         </x-card>
         <x-card class="p-6">
             <div class="flex items-center justify-between space-y-0 pb-2">
@@ -33,6 +34,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="h-4 w-4 text-slate-400"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
             </div>
             <div class="text-2xl font-bold text-slate-950">{{ number_format($totalCategories) }}</div>
+            <p class="text-xs text-slate-500 mt-1">Klasifikasi produk</p>
         </x-card>
     </div>
 
@@ -47,31 +49,35 @@
             </div>
         </x-card>
         <x-card class="col-span-3 p-6 flex flex-col">
-            <div class="mb-4">
-                <h3 class="text-lg font-semibold leading-none tracking-tight">Pemantauan Sistem</h3>
-                <p class="text-sm text-slate-500 mt-1">Sumber daya server (CPU & Memori).</p>
+            <div class="mb-4 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold leading-none tracking-tight">Pemantauan Sistem</h3>
+                    <p class="text-sm text-slate-500 mt-1">Sumber daya server (CPU & Memori).</p>
+                </div>
+                <span id="metrics-ts" class="text-xs text-slate-400">--:--:--</span>
             </div>
             <div class="flex-1 mt-2 space-y-4">
                 <div>
                     <div class="flex justify-between mb-1">
                         <span class="text-sm font-medium text-slate-700">Penggunaan CPU</span>
-                        <span class="text-sm font-medium text-slate-700">{{ sys_getloadavg()[0] }}%</span>
+                        <span id="cpu-pct" class="text-sm font-medium text-slate-700">--%</span>
                     </div>
                     <div class="w-full bg-slate-200 rounded-full h-2">
-                        <div class="bg-slate-900 h-2 rounded-full" style="width: {{ min(100, sys_getloadavg()[0] * 10) }}%"></div>
+                        <div id="cpu-bar" class="bg-slate-900 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
                 <div>
                     <div class="flex justify-between mb-1">
                         <span class="text-sm font-medium text-slate-700">Penggunaan Memori</span>
-                        <span class="text-sm font-medium text-slate-700">{{ round(memory_get_usage() / 1048576, 2) }} MB</span>
+                        <span id="mem-pct" class="text-sm font-medium text-slate-700">-- MB</span>
                     </div>
                     <div class="w-full bg-slate-200 rounded-full h-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: {{ min(100, (memory_get_usage() / 134217728) * 100) }}%"></div>
+                        <div id="mem-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
-                <div class="pt-4 border-t border-slate-100">
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
                     <a href="/system-logs" class="text-sm font-medium text-indigo-600 hover:underline">Lihat Log Sistem &rarr;</a>
+                    <span class="text-xs text-slate-400">Auto-refresh 5 dtk</span>
                 </div>
             </div>
         </x-card>
@@ -84,39 +90,34 @@
                 <h3 class="text-lg font-semibold leading-none tracking-tight text-red-600">Peringatan Stok Kritis</h3>
                 <p class="text-sm text-slate-500 mt-1">Produk berikut telah mencapai atau berada di bawah batas minimum stok.</p>
             </div>
-            <div class="overflow-x-auto">
-                <x-table>
-                    <thead>
-                        <tr class="border-b border-slate-200 bg-slate-50/50">
-                            <th class="h-12 px-4 text-left align-middle font-medium text-slate-500">SKU</th>
-                            <th class="h-12 px-4 text-left align-middle font-medium text-slate-500">Nama Produk</th>
-                            <th class="h-12 px-4 text-left align-middle font-medium text-slate-500">Gudang</th>
-                            <th class="h-12 px-4 text-left align-middle font-medium text-slate-500">Kategori</th>
-                            <th class="h-12 px-4 text-right align-middle font-medium text-slate-500">Stok Saat Ini</th>
-                            <th class="h-12 px-4 text-right align-middle font-medium text-slate-500">Batas Minimum</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($lowStockProducts as $product)
-                            <tr class="border-b border-slate-200 hover:bg-slate-50">
-                                <td class="p-4 align-middle text-sm">{{ $product->sku }}</td>
-                                <td class="p-4 align-middle text-sm font-medium">{{ $product->name }}</td>
-                                <td class="p-4 align-middle text-sm">{{ $product->warehouse->name ?? '-' }}</td>
-                                <td class="p-4 align-middle text-sm">
-                                    <x-badge class="bg-slate-100 text-slate-800">{{ $product->category->name ?? '-' }}</x-badge>
-                                </td>
-                                <td class="p-4 align-middle text-sm text-right font-bold text-red-600">{{ number_format($product->stock) }}</td>
-                                <td class="p-4 align-middle text-sm text-right text-slate-500">{{ number_format($product->min_stock) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </x-table>
-            </div>
+            <x-table>
+                <x-slot name="header">
+                    <th class="h-10 px-4 text-left align-middle font-medium">SKU</th>
+                    <th class="h-10 px-4 text-left align-middle font-medium">Nama Produk</th>
+                    <th class="h-10 px-4 text-left align-middle font-medium">Gudang</th>
+                    <th class="h-10 px-4 text-left align-middle font-medium">Kategori</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-red-600">Stok Saat Ini</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-slate-500">Batas Minimum</th>
+                </x-slot>
+
+                @foreach($lowStockProducts as $product)
+                <tr class="border-b transition-colors hover:bg-slate-50/50">
+                    <td class="p-4 align-middle font-medium text-sm">{{ $product->sku }}</td>
+                    <td class="p-4 align-middle text-sm font-semibold">{{ $product->name }}</td>
+                    <td class="p-4 align-middle text-sm text-slate-500">{{ $product->warehouse->name ?? '-' }}</td>
+                    <td class="p-4 align-middle text-sm">
+                        <x-badge class="bg-slate-100 text-slate-800">{{ $product->category->name ?? '-' }}</x-badge>
+                    </td>
+                    <td class="p-4 align-middle text-sm text-right font-bold text-red-600">{{ number_format($product->stock) }}</td>
+                    <td class="p-4 align-middle text-sm text-right text-slate-500">{{ number_format($product->min_stock) }}</td>
+                </tr>
+                @endforeach
+            </x-table>
         </x-card>
     </div>
     @endif
 
-    <!-- Chart.js Script -->
+    <!-- Chart.js + Metrics Polling -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('overviewChart');
@@ -135,6 +136,34 @@
                 }]
             },
             options: { responsive: true, maintainAspectRatio: false }
-        });
+            });
+
+            // ── Auto-refresh metrics panel (polling setiap 5 detik) ──
+            async function fetchMetrics() {
+                try {
+                    const res  = await fetch('{{ route('metrics') }}', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    const data = await res.json();
+
+                    document.getElementById('cpu-pct').textContent  = data.cpu_pct + '%';
+                    document.getElementById('cpu-bar').style.width  = data.cpu_pct + '%';
+
+                    document.getElementById('mem-pct').textContent  = data.mem_used_mb + ' MB / ' + data.mem_total_mb + ' MB (' + data.mem_pct + '%)';
+                    document.getElementById('mem-bar').style.width  = data.mem_pct + '%';
+
+                    // Warna bar CPU berdasarkan beban
+                    const cpuBar = document.getElementById('cpu-bar');
+                    cpuBar.className = 'h-2 rounded-full transition-all duration-500 ' +
+                        (data.cpu_pct >= 80 ? 'bg-red-500' : data.cpu_pct >= 50 ? 'bg-orange-400' : 'bg-slate-900');
+
+                    document.getElementById('metrics-ts').textContent = data.timestamp;
+                } catch (e) {
+                    document.getElementById('metrics-ts').textContent = 'Error';
+                }
+            }
+
+        fetchMetrics();
+        setInterval(fetchMetrics, 5000);
     </script>
 </x-app-layout>

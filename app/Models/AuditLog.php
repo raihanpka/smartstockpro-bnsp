@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AuditLog extends Model
 {
     protected $guarded = [];
-    
+
     protected function casts(): array
     {
         return [
@@ -16,13 +16,18 @@ class AuditLog extends Model
         ];
     }
 
-    public static function record(string $action, Model $model = null, array $old = null, array $new = null)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public static function record(string $action, ?Model $model = null, ?array $old = null, ?array $new = null): self
     {
         return self::create([
-            'user_id' => auth()->id(),
-            'action' => $action,
+            'user_id'    => auth()->id(),
+            'action'     => $action,
             'model_type' => $model ? get_class($model) : null,
-            'model_id' => $model ? $model->id : null,
+            'model_id'   => $model ? $model->id : null,
             'old_values' => $old,
             'new_values' => $new,
             'ip_address' => request()->ip(),

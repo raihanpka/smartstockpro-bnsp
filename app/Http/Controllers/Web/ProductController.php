@@ -8,15 +8,52 @@ use App\Models\Category;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use App\Services\StockCalculationService;
+use App\Services\ReportService;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     public function __construct(private StockCalculationService $stockService) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'warehouse'])->latest()->paginate(10);
-        return view('products.index', compact('products'));
+        $query = Product::with(['category', 'warehouse']);
+
+        // Pencarian nama / SKU
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter gudang
+        if ($request->filled('warehouse_id')) {
+            $query->where('warehouse_id', $request->warehouse_id);
+        }
+
+        // Filter kategori
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Filter stok kritis saja
+        if ($request->filled('low_stock') && $request->low_stock === '1') {
+            $query->whereColumn('stock', '<=', 'min_stock');
+        }
+
+        // Sorting
+        $sortable = ['name', 'sku', 'stock', 'created_at'];
+        $sort     = in_array($request->sort, $sortable) ? $request->sort : 'created_at';
+        $dir      = $request->dir === 'asc' ? 'asc' : 'desc';
+        $query->orderBy($sort, $dir);
+
+        $products   = $query->paginate(10)->withQueryString();
+        $warehouses = Warehouse::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+
+        return view('products.index', compact('products', 'warehouses', 'categories'));
     }
 
     public function create()
@@ -90,20 +127,26 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
 
-    public function export()
+    public function export(ReportService $reportService)
     {
-        \App\Jobs\GenerateReportJob::dispatch(['type' => 'inventory'], auth()->id())->onQueue('reports');
-        return back()->with('success', 'Laporan inventaris sedang diproses di background.');
+        $fileName = $reportService->generateInventoryReport(['type' => 'inventory']);
+        return Storage::download($fileName);
     }
 
     public function import(Request $request)
     {
         $request->validate([
             'warehouse_id' => 'required|exists:warehouses,id',
-            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+            'file'         => 'required|mimes:xlsx,xls,csv|max:5120',
         ]);
-        
-        \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\ProductsImport($request->warehouse_id), $request->file('file'));
-        return back()->with('success', 'Data produk berhasil diimpor.');
+
+        // Simpan file ke storage/app/imports/ agar bisa diakses oleh job
+        $path = $request->file('file')->store('imports');
+
+        // Dispatch job ke queue (in-memory via sync driver)
+        \App\Jobs\ImportProductsJob::dispatch($path, (int) $request->warehouse_id, auth()->id())
+            ->onQueue('imports');
+
+        return back()->with('success', 'File berhasil diunggah dan sedang diproses. Refresh halaman untuk melihat produk terbaru.');
     }
 }
