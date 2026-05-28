@@ -180,8 +180,7 @@ Container yang berjalan:
 | Container | Peran |
 |---|---|
 | `smartstock_db` | PostgreSQL 16 |
-| `smartstock_app` | PHP-FPM 8.4 (menjalankan migrate + seed otomatis) |
-| `smartstock_nginx` | Nginx — reverse proxy ke PHP-FPM, port `8080` |
+| `smartstock_app` | Laravel App (menjalankan artisan serve, port `8080`, migrate + seed otomatis) |
 | `smartstock_worker` | Queue worker untuk background jobs |
 
 Akses di `http://your-server:8080`.
